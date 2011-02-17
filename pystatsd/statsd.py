@@ -24,9 +24,9 @@ class Statsd(object):
         """
         Log timing information
         >>> from pystatsd import statsd
-        >>> statsd_client.timing('some.time','500|ms')
+        >>> statsd_client.timing('some.time','500')
         """
-        self.update_stats(stats, time, sample_rate)
+        self.update_stats(stats, time, sample_rate, is_time=True)
 
     def increment(self, stats, sample_rate=1):
         """
@@ -43,7 +43,7 @@ class Statsd(object):
         """
         self.update_stats(stats, -1, sample_rate)
     
-    def update_stats(self, stats, delta=1, sampleRate=1):
+    def update_stats(self, stats, delta=1, sampleRate=1, is_time=False):
         """
         Updates one or more stats counters by arbitrary amounts
         >>> statsd_client.update_stats('some.int',10)
@@ -52,7 +52,7 @@ class Statsd(object):
             stats = [stats]
         data = {}
         for stat in stats:
-            data[stat] = "%s|c" % delta
+            data[stat] = "%s|%s" % (delta, 'ms' if is_time else 'c')
 
         self.send(data, sampleRate)
     
